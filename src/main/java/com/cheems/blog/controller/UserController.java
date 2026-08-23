@@ -6,6 +6,7 @@ import com.cheems.blog.service.UserService;
 import com.cheems.blog.utils.ResultUtils;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,10 +18,17 @@ public class UserController {
     @Resource
     private UserService userService;
 
-    @PostMapping
+    @GetMapping("/login")
     public Result<User> login(Integer userId, HttpServletRequest request) {
         return ResultUtils.success(userService.login(userId, request));
     }
+
+    @GetMapping("/get/login")
+    public Result<User> getLoginUser(HttpServletRequest request) {
+        return ResultUtils.success(userService.getLoginUser(request));
+    }
+
+
 
 
 }
