@@ -2,6 +2,8 @@ package com.cheems.blog.service;
 
 import com.baomidou.mybatisplus.spring.service.IService;
 import com.cheems.blog.entity.Blog;
+import com.cheems.blog.entity.vo.BlogVO;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
 * @author cheems
@@ -10,4 +12,5 @@ import com.cheems.blog.entity.Blog;
 */
 public interface BlogService extends IService<Blog> {
 
+    BlogVO getBlogVOById(long blogId, HttpServletRequest request);
 }
