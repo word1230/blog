@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RequestMapping("/blog")
 @RestController
@@ -21,6 +23,11 @@ public class BlogController {
     @GetMapping("/get")
     public Result<BlogVO> getBlogVOById(long blogId, HttpServletRequest request) {
         return ResultUtils.success(blogService.getBlogVOById(blogId, request));
+    }
+
+    @GetMapping("/list")
+    public Result<List<BlogVO>> getBlogVOList(HttpServletRequest request) {
+        return ResultUtils.success(blogService.getBlogVOList(request));
     }
 
 

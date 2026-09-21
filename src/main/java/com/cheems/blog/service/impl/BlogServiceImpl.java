@@ -16,6 +16,8 @@ import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
 * @author cheems
 * @description 针对表【blog】的数据库操作Service实现
@@ -35,6 +37,34 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         Blog blog = this.getById(blogId);
         User loginUser = userService.getLoginUser(request);
         return this.getBlogVO(blog,loginUser);
+    }
+
+    @Override
+    public List<BlogVO> getBlogVOList(HttpServletRequest request) {
+        //1. 查找blog
+        List<Blog> blogList = this.list();
+        if(blogList==null||blogList.size()==0){
+            return List.of();
+        }
+
+        //2. 查找是否点赞
+        User loginUser = userService.getLoginUser(request);
+        if(loginUser==null){
+            return List.of();
+        }
+        QueryWrapper<Thumb> thumbQueryWrapper = new QueryWrapper<>();
+        thumbQueryWrapper.eq("user_id", loginUser.getId());
+        thumbQueryWrapper.in("blog_id", blogList);
+        List<Thumb> thumbList = thumbService.list(thumbQueryWrapper);
+
+        List<Long> thumbBlogId = thumbList.stream().map(Thumb::getBlogId).toList();
+        return  blogList.stream()
+                .map(blog -> {
+                    BlogVO blogVO = new BlogVO();
+                    BeanUtil.copyProperties(blog,blogVO);
+                    blogVO.setHasThumb(thumbBlogId.contains(blog.getId()));
+                    return blogVO;
+                }).toList();
     }
 
     private BlogVO getBlogVO(Blog blog, User loginUser) {
