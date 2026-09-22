@@ -2,6 +2,7 @@ package com.cheems.blog.service;
 
 import com.baomidou.mybatisplus.spring.service.IService;
 import com.cheems.blog.entity.Thumb;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
 * @author cheems
@@ -10,4 +11,5 @@ import com.cheems.blog.entity.Thumb;
 */
 public interface ThumbService extends IService<Thumb> {
 
+    Boolean doThumb(Long blogId, HttpServletRequest request);
 }
