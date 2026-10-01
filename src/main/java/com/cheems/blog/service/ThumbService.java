@@ -2,7 +2,11 @@ package com.cheems.blog.service;
 
 import com.baomidou.mybatisplus.spring.service.IService;
 import com.cheems.blog.entity.Thumb;
+import com.cheems.blog.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author cheems
@@ -11,5 +15,19 @@ import jakarta.servlet.http.HttpServletRequest;
 */
 public interface ThumbService extends IService<Thumb> {
 
-    Boolean doThumb(Long blogId, HttpServletRequest request);
+    /**
+     * 用户对于这个博客是否点赞
+     * @param blogId
+     * @param loginUser
+     * @return
+     */
+    Boolean isDoThumb(Long blogId, User loginUser);
+
+
+    /**
+     * 用户对于这一批博客所有的点赞情况
+     * @return
+     */
+    Map<Long,Boolean>  isDoThumbMap(List<Long> blogIds, User loginUser);
+
 }

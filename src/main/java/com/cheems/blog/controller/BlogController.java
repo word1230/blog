@@ -2,6 +2,7 @@ package com.cheems.blog.controller;
 
 import com.cheems.blog.common.result.Result;
 import com.cheems.blog.entity.vo.BlogVO;
+import com.cheems.blog.facade.BlogThumbFacade;
 import com.cheems.blog.service.BlogService;
 import com.cheems.blog.utils.ResultUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,17 +18,18 @@ import java.util.List;
 @RestController
 public class BlogController {
 
-    private final BlogService blogService;
+    private final BlogThumbFacade blogThumbFacade;
 
 
     @GetMapping("/get")
     public Result<BlogVO> getBlogVOById(long blogId, HttpServletRequest request) {
-        return ResultUtils.success(blogService.getBlogVOById(blogId, request));
+
+        return  ResultUtils.success(blogThumbFacade.getBlogVOById(blogId, request));
     }
 
     @GetMapping("/list")
     public Result<List<BlogVO>> getBlogVOList(HttpServletRequest request) {
-        return ResultUtils.success(blogService.getBlogVOList(request));
+        return ResultUtils.success(blogThumbFacade.getBlogVOList(request));
     }
 
 

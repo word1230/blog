@@ -1,10 +1,9 @@
 package com.cheems.blog.controller;
 
 import com.cheems.blog.common.result.Result;
-import com.cheems.blog.service.ThumbService;
+import com.cheems.blog.facade.BlogThumbFacade;
 import com.cheems.blog.utils.ResultUtils;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,11 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ThumbController {
 
-    private final ThumbService thumbService;
+    private final BlogThumbFacade blogThumbFacade;
 
-    public Result<Boolean> doThumb( Long blogId, HttpServletRequest request) {
-        return ResultUtils.success(thumbService.doThumb(blogId,request));
+    public Result<Boolean> doThumb(Long blogId, HttpServletRequest request) {
+        return ResultUtils.success(blogThumbFacade.doThumb(blogId, request));
     }
 
+    public Result<Boolean> unThumb(Long blogId, HttpServletRequest request) {
+        return ResultUtils.success(blogThumbFacade.unThumb(blogId,request));
+    }
 
 }

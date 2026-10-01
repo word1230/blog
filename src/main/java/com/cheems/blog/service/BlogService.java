@@ -14,13 +14,7 @@ import java.util.List;
  */
 public interface BlogService extends IService<Blog> {
 
-    BlogVO getBlogVOById(long blogId, HttpServletRequest request);
+    Blog getBlogById(long blogId);
 
-    /**
-     * 查询blogvo列表
-     *
-     * @return
-     */
-    List<BlogVO> getBlogVOList(HttpServletRequest request);
 
 }
