@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -22,7 +23,7 @@ public class BlogController {
 
 
     @GetMapping("/get")
-    public Result<BlogVO> getBlogVOById(long blogId, HttpServletRequest request) {
+    public Result<BlogVO> getBlogVOById(@RequestParam Long blogId, HttpServletRequest request) {
 
         return  ResultUtils.success(blogThumbFacade.getBlogVOById(blogId, request));
     }

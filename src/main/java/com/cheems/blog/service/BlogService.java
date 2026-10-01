@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface BlogService extends IService<Blog> {
 
-    Blog getBlogById(long blogId);
+    Blog getBlogById(Long blogId);
 
 
 }

@@ -31,11 +31,9 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog>
         implements BlogService {
 
 
-    private UserService userService;
-
     @Override
-    public Blog getBlogById(long blogId) {
-        if (StrUtil.isBlankIfStr(blogId)) {
+    public Blog getBlogById(Long blogId) {
+        if (blogId == null || blogId <= 0) {
             throw new BizException(ErrorCode.PARAM_ERROR, "blogId不能为空");
         }
         Blog blog = this.getById(blogId);

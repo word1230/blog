@@ -54,9 +54,12 @@ public class BlogThumbFacade {
     }
 
 
-    public BlogVO getBlogVOById(long blogId, HttpServletRequest request) {
+    public BlogVO getBlogVOById(Long blogId, HttpServletRequest request) {
 
         //查询文章基本信息
+        if (blogId == null) {
+            throw new BizException(ErrorCode.PARAM_ERROR);
+        }
         Blog blog = blogService.getBlogById(blogId);
         if (blog == null) {
             throw new BizException(ErrorCode.NOT_FOUND);
@@ -78,8 +81,11 @@ public class BlogThumbFacade {
     public Boolean doThumb(Long blogId, HttpServletRequest request) {
 
         //1. 判断blogId 是否存在
-        if (blogId == null || blogService.getBlogById(blogId) == null) {
+        if (blogId == null ) {
             throw new BizException(ErrorCode.PARAM_ERROR);
+        }
+        if(blogService.getBlogById(blogId) == null){
+            throw new BizException(ErrorCode.NOT_FOUND);
         }
 
         //2. 加锁事务：
@@ -113,8 +119,11 @@ public class BlogThumbFacade {
 
     public Boolean unThumb(Long blogId, HttpServletRequest request) {
         //1. 判断blogId是否存在
-        if (blogId == null || blogService.getBlogById(blogId) == null) {
+        if (blogId == null ) {
             throw new BizException(ErrorCode.PARAM_ERROR);
+        }
+        if(blogService.getBlogById(blogId) == null){
+            throw new BizException(ErrorCode.NOT_FOUND);
         }
 
         //2, 事务 + 加锁

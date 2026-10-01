@@ -36,7 +36,12 @@ public class ThumbServiceImpl extends ServiceImpl<ThumbMapper, Thumb>
 
     @Override
     public Map<Long, Boolean> isDoThumbMap(List<Long> blogIds, User loginUser) {
-
+        if(blogIds == null || blogIds.size() == 0){
+            return Map.of();
+        }
+        if(loginUser == null){
+            return Map.of();
+        }
         List<Thumb> thumbList = this.lambdaQuery()
                 .in(Thumb::getBlogId, blogIds)
                 .eq(Thumb::getUserId, loginUser.getId())
