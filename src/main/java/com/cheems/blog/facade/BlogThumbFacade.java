@@ -1,6 +1,7 @@
 package com.cheems.blog.facade;
 
 
+import com.cheems.blog.common.constant.ThumbConstant;
 import com.cheems.blog.common.exception.BizException;
 import com.cheems.blog.common.exception.ErrorCode;
 import com.cheems.blog.entity.Blog;
@@ -13,12 +14,15 @@ import com.cheems.blog.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 
 @RequiredArgsConstructor
 @Service
@@ -28,6 +32,7 @@ public class BlogThumbFacade {
     private final ThumbService thumbService;
     private final UserService userService;
     private final TransactionTemplate transactionTemplate;
+    private final RedisTemplate<String,Object> redisTemplate;
 
     public List<BlogVO> getBlogVOList(HttpServletRequest request) {
         //1.查询所有的blog
@@ -90,9 +95,10 @@ public class BlogThumbFacade {
 
         //2. 加锁事务：
         User loginUser = userService.getLoginUser(request);
+        AtomicReference<Long> thumbId = new AtomicReference<>();
         //todo 手动事务 + 加锁
         synchronized (loginUser.getId().toString().intern()) {
-            return transactionTemplate.execute(status -> {
+            Boolean executed = transactionTemplate.execute(status -> {
                 //2.1 查询是否已点赞
                 Boolean doThumb = thumbService.isDoThumb(blogId, loginUser);
                 if (doThumb) {
@@ -109,12 +115,19 @@ public class BlogThumbFacade {
                     if (!save) {
                         throw new BizException(ErrorCode.SYSTEM_ERROR);
                     }
+                    thumbId.set(thumb.getId());
                 } else {
                     throw new BizException(ErrorCode.SYSTEM_ERROR);
                 }
                 return Boolean.TRUE;
             });
+            if(executed){
+                //更新redis
+                redisTemplate.opsForHash().put(ThumbConstant.USER_THUMB_KEY_PREFIX + loginUser.getId(), blogId.toString(),thumbId.get());
+                redisTemplate.expire(ThumbConstant.USER_THUMB_KEY_PREFIX + loginUser.getId(), Duration.ofDays(30));
+            }
         }
+        return Boolean.TRUE;
     }
 
     public Boolean unThumb(Long blogId, HttpServletRequest request) {
@@ -129,7 +142,7 @@ public class BlogThumbFacade {
         //2, 事务 + 加锁
         User loginUser = userService.getLoginUser(request);
         synchronized (loginUser.getId().toString().intern()) {
-            return transactionTemplate.execute(status -> {
+            Boolean executed = transactionTemplate.execute(status -> {
                 //2.1 判断是否点赞
                 Boolean doThumb = thumbService.isDoThumb(blogId, loginUser);
                 if (!doThumb) {
@@ -155,6 +168,10 @@ public class BlogThumbFacade {
                 }
                 return Boolean.TRUE;
             });
+            if(executed){
+                redisTemplate.opsForHash().delete(ThumbConstant.USER_THUMB_KEY_PREFIX + loginUser.getId(), blogId.toString());
+            }
         }
+        return Boolean.TRUE;
     }
 }
